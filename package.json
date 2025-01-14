@@ -1,43 +1,45 @@
 {
   "name": "directory-exporter-to-index-ts",
-  "displayName": "directory-exporter-to-index.ts",
+  "displayName": "Directory Exporter to Index TS",
   "description": "Export all files in a directory to an index.ts file for cleaner code.",
-  "author": "Remco Stoeten",
+  "version": "0.0.1",
+  "publisher": "remcostoeten",
+  "categories": [
+    "Snippets",
+    "Formatters"
+  ],
+  "engines": {
+    "vscode": "^1.56.0"
+  },
+  "activationEvents": [
+    "onCommand:auto-export-folder-to-index-ts.exportDirectory",
+    "onCommand:auto-export-folder-to-index-ts.createIndex",
+    "onCommand:auto-export-folder-to-index-ts.generateIndex",
+    "onCommand:auto-export-folder-to-index-ts.exportAllFiles"
+  ],
+  "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "esbuild --bundle src/extension.ts --outdir=dist --platform=node --external:vscode",
+    "watch": "esbuild --bundle src/extension.ts --outdir=dist --platform=node --external:vscode --watch",
+    "package": "vsce package",
+    "publish": "vsce publish"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.37",
+    "@types/vscode": "^1.56.0",
+    "esbuild": "^0.12.15",
+    "typescript": "^4.2.4",
+    "vsce": "^1.89.0"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/remcostoeten/vscode-extension-export-directory-to-index-ts"
   },
-  "version": "0.0.1",
-  "engines": {
-    "vscode": "^1.96.0"
+  "author": "Remco Stoeten",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/remcostoeten/vscode-extension-export-directory-to-index-ts/issues"
   },
-  "categories": [
-    "Other",
-    "Programming Languages",
-    "Snippets",
-    "Linters",
-    "Formatters"
-  ],
-  "activationEvents": [],
-  "main": "./dist/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "directory-exporter-to-index-ts.helloWorld",
-        "title": "Hello World"
-      }
-    ]
-  },
-  "scripts": {
-    "vscode:prepublish": "pnpm run package",
-    "compile": "pnpm run check-types && pnpm run lint && node esbuild.js",
-    "watch": "npm-run-all -p watch:*",
-    "watch:esbuild": "node esbuild.js --watch",
-    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
-    "package": "pnpm run check-types && pnpm run lint && node esbuild.js --production",
-    "compile-tests": "tsc -p . --outDir out",
-    "watch-tests": "tsc -p . -w --outDir out",
-    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
-    "check-types": "tsc --noEmit"
-  }
+  "homepage": "https://github.com/remcostoeten/vscode-extension-export-directory-to-index-ts#readme"
 }

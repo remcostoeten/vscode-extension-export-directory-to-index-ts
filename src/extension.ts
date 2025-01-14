@@ -1,26 +1,35 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
+	import * as vscode from 'vscode';
+	import * as fs from 'fs';
+	import * as path from 'path';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+	export function activate(context: vscode.ExtensionContext) {
+		const config = vscode.workspace.getConfiguration('auto-export-folder-to-index-ts');
+		const FILES_WITH_EXTENSION = config.get<string>('filesWithExtension', 'tsx');
+		const EXCLUDE_FILE = config.get<string[]>('excludeFile', ['index.tsx']);
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "directory-exporter-to-index-ts" is now active!');
+		const exportDirectory = () => {
+			const workspaceFolders = vscode.workspace.workspaceFolders;
+			if (workspaceFolders) {
+				const rootPath = workspaceFolders[0].uri.fsPath;
+				const indexPath = path.join(rootPath, 'index.ts');
+				const files = fs.readdirSync(rootPath).filter((file: string) => !EXCLUDE_FILE.includes(file) && file.endsWith(`.${FILES_WITH_EXTENSION}`));
+				const exportStatements = files.map((file: string) => `export * from './${file.replace(`.${FILES_WITH_EXTENSION}`, '')}';`).join('\n');
+				fs.writeFileSync(indexPath, exportStatements);
+				vscode.window.showInformationMessage('Directory exported to index.ts');
+			} else {
+				vscode.window.showErrorMessage('No workspace folder found');
+			}
+		};
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	const disposable = vscode.commands.registerCommand('directory-exporter-to-index-ts.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from directory-exporter-to-index.ts!');
-	});
+		let disposableExportDirectory = vscode.commands.registerCommand('auto-export-folder-to-index-ts.exportDirectory', exportDirectory);
+		let disposableCreateIndex = vscode.commands.registerCommand('auto-export-folder-to-index-ts.createIndex', exportDirectory);
+		let disposableGenerateIndex = vscode.commands.registerCommand('auto-export-folder-to-index-ts.generateIndex', exportDirectory);
+		let disposableExportAllFiles = vscode.commands.registerCommand('auto-export-folder-to-index-ts.exportAllFiles', exportDirectory);
 
-	context.subscriptions.push(disposable);
-}
+		context.subscriptions.push(disposableExportDirectory);
+		context.subscriptions.push(disposableCreateIndex);
+		context.subscriptions.push(disposableGenerateIndex);
+		context.subscriptions.push(disposableExportAllFiles);
+	}
 
-// This method is called when your extension is deactivated
-export function deactivate() {}
+	export function deactivate() { }
